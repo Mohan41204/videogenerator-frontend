@@ -3,6 +3,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { UploadCloud, Wand2, MonitorPlay, Smartphone, Download } from 'lucide-react';
 import VoiceRecorder from './VoiceRecorder';
+import { API_BASE_URL } from '../config';
 
 const VideoGeneratorForm = ({ onVideoGenerated }) => {
   const [topic, setTopic] = useState('');
@@ -30,7 +31,7 @@ const VideoGeneratorForm = ({ onVideoGenerated }) => {
 
   const fetchVoices = async (preferredVoiceId) => {
     try {
-      const res = await axios.get('http://localhost:5000/api/voice/list');
+      const res = await axios.get(`${API_BASE_URL}/api/voice/list`);
       if (res.data.success) {
         setVoices(res.data.voices);
         if (preferredVoiceId) {
@@ -46,13 +47,13 @@ const VideoGeneratorForm = ({ onVideoGenerated }) => {
     setIsTestingVoice(true);
     setTestAudioUrl(null);
     try {
-      const response = await axios.post('http://localhost:5000/api/voice/test', {
+      const response = await axios.post(`${API_BASE_URL}/api/voice/test`, {
         text: testText,
         language: testLang,
         voiceId: selectedVoiceId
       });
       if (response.data.success) {
-        setTestAudioUrl(`http://localhost:5000${response.data.audioUrl}`);
+        setTestAudioUrl(`${API_BASE_URL}${response.data.audioUrl}`);
         toast.success('Test audio generated successfully');
       } else {
         toast.error(response.data.message || 'Failed to test voice');
@@ -105,8 +106,8 @@ const VideoGeneratorForm = ({ onVideoGenerated }) => {
 
     try {
       const endpoint = tutorialType === 'aws' 
-        ? 'http://localhost:5000/api/videos/generate-aws-script'
-        : 'http://localhost:5000/api/videos/generate-script';
+        ? `${API_BASE_URL}/api/videos/generate-aws-script`
+        : `${API_BASE_URL}/api/videos/generate-script`;
         
       const response = await axios.post(endpoint, {
         topic,
@@ -173,7 +174,7 @@ const VideoGeneratorForm = ({ onVideoGenerated }) => {
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/api/videos/generate', formData);
+      const response = await axios.post(`${API_BASE_URL}/api/videos/generate`, formData);
 
       clearInterval(progressInterval);
       setProgress(100);
